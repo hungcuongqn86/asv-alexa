@@ -3,3 +3,16 @@
 
 /* Place any CSS rules you want to apply on both iOS and Android here.
 This is where the vast majority of your CSS code goes. */
+.fas {
+    font-family: "Font Awesome 5 Free", "fa-solid-900";
+    font-weight: 900;
+    font-size: 32;
+}
+
+.speak-btn {
+    height: 100;
+    width: 100;
+    border-radius: 50;
+    color: dodgerblue;
+    background-color: #e6e6e6;
+}
