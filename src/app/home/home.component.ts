@@ -19,8 +19,8 @@ export class HomeComponent implements OnInit {
         const context = utils.ad.getApplicationContext();
         const activity = app.android.startActivity;
         this.asvAlexa = new com.amazon.sampleapp.AsvAlexaPlugin();
-        this.asvAlexa.init(context, activity);
-        console.log(65656565, this.asvAlexa);
+        const res = this.asvAlexa.init(context, activity);
+        console.log("Init: ", res);
     }
 
     public tapToTalk() {
