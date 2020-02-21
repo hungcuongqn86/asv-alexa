@@ -1,5 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Sample App</string>
+    <string name="app_name">AsvAlexa</string>
+    <string name="title_activity_kimera">AsvAlexa</string>
 
     <!-- Actions -->
     <string name="action_tap_to_talk">Tap to Talk</string>
@@ -35,7 +37,8 @@
     <string name="upload_contacts">UPLOAD</string>
     <string name="cancel_contacts">CANCEL</string>
     <string name="remove_contacts">REMOVE</string>
-    <string name="seek_access_to_contacts">Grant Alexa permission to use your phone contacts in order to make calls?</string>
+    <string name="seek_access_to_contacts">Grant Alexa permission to use your phone contacts in order to make calls?
+    </string>
     <string name="seek_access_to_navigation_favorites">Grant Alexa permission to use your navigation favorites?</string>
     <string name="confirm">YES</string>
     <string name="deny">NO</string>
@@ -87,7 +90,9 @@
     <string name="wake_word">WAKE WORD</string>
     <string name="wake_word_enabled">ENABLE WAKE WORD</string>
     <string name="wake_word_not_supported">WAKE WORD NOT SUPPORTED</string>
-    <string name="wake_word_locale">CHANGING ALEXA LOCALE ALSO CHANGES THE WAKEWORD LOCALE WHEN RUNTIME SWITCHING IS CONFIGURED.</string>
+    <string name="wake_word_locale">CHANGING ALEXA LOCALE ALSO CHANGES THE WAKEWORD LOCALE WHEN RUNTIME SWITCHING IS
+        CONFIGURED.
+    </string>
 
     <!-- Alexa Locale -->
     <string name="alexa_locale">ALEXA LOCALE</string>
@@ -160,7 +165,7 @@
     <string name="card_current_weather_icon">Current Weather Icon</string>
 
     <!-- Preferences -->
-    <string name="preference_file_key">com.amazon.sampleapp.SampleAppSharedPreferences</string>
+    <string name="preference_file_key">org.nativescript.AsvAlexa.SampleAppSharedPreferences</string>
     <string name="preference_client_id">Client ID Key</string>
     <string name="preference_client_secret">Client Secret Key</string>
     <string name="preference_product_id">Product ID Key</string>
