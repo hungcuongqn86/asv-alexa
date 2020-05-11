@@ -3,4 +3,8 @@ import { platformNativeScriptDynamic } from "nativescript-angular/platform";
 
 import { AppModule } from "./app/app.module";
 
+import { TestAndroidService } from "./app/testAndroidService"
+
+new TestAndroidService().extendBackgroundService();
+
 platformNativeScriptDynamic().bootstrapModule(AppModule);
