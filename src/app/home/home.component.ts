@@ -10,6 +10,7 @@ declare var com: any;
     templateUrl: "./home.component.html"
 })
 export class HomeComponent implements OnInit, OnDestroy {
+    public LVC_RECEIVER_INTENT = "com.nativescript.asvalexa.lvcconfigreceiver";
     public asvAlexa: any;
     public context: any;
     public activity: any;
@@ -42,7 +43,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         };
 
         applicationModule.registerBroadcastReceiver(
-            "test-message",
+            this.LVC_RECEIVER_INTENT,
             receiverCallback
         );
         console.log("Registration Completed");
