@@ -1,16 +1,9 @@
 import * as application from "tns-core-modules/application";
-import * as utils from "tns-core-modules/utils/utils";
-import {device} from "tns-core-modules/platform";
+import * as constant from "./const";
 
 declare var com: any;
 
 export class TestAndroidService {
-    public LVC_RECEIVER_INTENT = "com.nativescript.asvalexa.lvcconfigreceiver";
-    public LVC_RECEIVER_CONFIGURATION = "configuration";
-    private LVC_SERVICE_ACTION = "com.amazon.alexalve.LocalVoiceControlService";
-    private LVC_SERVICE_PACKAGE_NAME = "com.amazon.alexalve";
-    public LVC_RECEIVER_FAILURE_REASON = "failure_reason";
-    public LVC_RECEIVER_FAILURE_REASON_LVC_NOT_INSTALLED = "lvc_not_installed";
     public mLVCService: any;
     public mLVCConfig: string = '';
     public mConnection: any;
@@ -74,8 +67,8 @@ export class TestAndroidService {
 
         // Check if LVC service (from LVC APK) is installed on this device
         const serviceIntent = new android.content.Intent();
-        serviceIntent.setAction(this.LVC_SERVICE_ACTION);
-        serviceIntent.setPackage(this.LVC_SERVICE_PACKAGE_NAME);
+        serviceIntent.setAction(constant.LVC_SERVICE_ACTION);
+        serviceIntent.setPackage(constant.LVC_SERVICE_PACKAGE_NAME);
         const packageManager = application.android.context.getPackageManager();
         const resolveInfo = packageManager.resolveService(serviceIntent, 0);
 
@@ -85,7 +78,7 @@ export class TestAndroidService {
         } else {
             // LVC service not installed. Send failure broadcast and stop this service
             console.log("LVC service not installed on the device. Stopping LVCInteractionService");
-            this.sendAHEInitFailure(this.LVC_RECEIVER_FAILURE_REASON_LVC_NOT_INSTALLED);
+            this.sendAHEInitFailure(constant.LVC_RECEIVER_FAILURE_REASON_LVC_NOT_INSTALLED);
             // stopSelf();
         }
     }
@@ -164,21 +157,21 @@ export class TestAndroidService {
 
     sendAHEInitSuccess(result: string) {
         console.log("message supposed to be sent from Service via broadcast " + result);
-        const intent = new android.content.Intent(this.LVC_RECEIVER_INTENT);
-        intent.putExtra(this.LVC_RECEIVER_CONFIGURATION, result);
+        const intent = new android.content.Intent(constant.LVC_RECEIVER_INTENT);
+        intent.putExtra(constant.LVC_RECEIVER_CONFIGURATION, result);
         application.android.foregroundActivity.sendBroadcast(intent);
     }
 
     sendAHEInitFailure(reason: string) {
         const intent = new android.content.Intent();
-        intent.setAction(this.LVC_RECEIVER_INTENT);
-        intent.putExtra(this.LVC_RECEIVER_FAILURE_REASON, reason);
+        intent.setAction(constant.LVC_RECEIVER_INTENT);
+        intent.putExtra(constant.LVC_RECEIVER_FAILURE_REASON, reason);
         application.android.foregroundActivity.sendBroadcast(intent);
     }
 
     sendMessage(message) {
         console.log("message supposed to be sent from Service via broadcast " + message);
-        const intent = new android.content.Intent(this.LVC_RECEIVER_INTENT);
+        const intent = new android.content.Intent(constant.LVC_RECEIVER_INTENT);
         application.android.foregroundActivity.sendBroadcast(intent);
     }
 
