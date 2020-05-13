@@ -174,8 +174,8 @@ export class HomeComponent implements OnInit, OnDestroy {
 
         // Create AAC engine
         this.mEngine = com.amazon.sampleapp.aace.core.Engine.create(this.context);
-        // const configuration = this.getEngineConfigurations(json, appDataDir, certsDir, modelsDir);
-        console.log(1111111111111111111);
+        const configuration = this.getEngineConfigurations(json, appDataDir, certsDir, modelsDir);
+        console.log(1111111111111111111, configuration);
     }
 
     public tapToTalk() {
@@ -192,6 +192,9 @@ export class HomeComponent implements OnInit, OnDestroy {
         const productDsn = this.mPreferences.getString(this.context.getResources().getString(utils.ad.resources.getStringId('preference_product_dsn')), "");
         const clientId = this.mPreferences.getString(this.context.getResources().getString(utils.ad.resources.getStringId('preference_client_id')), "");
         const productId = this.mPreferences.getString(this.context.getResources().getString(utils.ad.resources.getStringId('preference_product_id')), "");
+        // console.log('getEngineConfigurations', productDsn, clientId, productId);
+
+        // console.log(22222222, this.mEngine.getProperty(com.amazon.sampleapp.aace.core.CoreProperties.VERSION));
 
         const configuration = [
             com.amazon.sampleapp.aace.alexa.config.AlexaConfiguration.createCurlConfig(certsDir.getPath()),
@@ -210,8 +213,8 @@ export class HomeComponent implements OnInit, OnDestroy {
                     new com.amazon.sampleapp.aace.vehicle.config.VehicleConfiguration.VehicleProperty(com.amazon.sampleapp.aace.vehicle.config.VehicleConfiguration.VehiclePropertyType.TRIM, "Advance"),
                     new com.amazon.sampleapp.aace.vehicle.config.VehicleConfiguration.VehicleProperty(com.amazon.sampleapp.aace.vehicle.config.VehicleConfiguration.VehiclePropertyType.YEAR, "2025"),
                     new com.amazon.sampleapp.aace.vehicle.config.VehicleConfiguration.VehicleProperty(com.amazon.sampleapp.aace.vehicle.config.VehicleConfiguration.VehiclePropertyType.GEOGRAPHY, "US"),
-                    new com.amazon.sampleapp.aace.vehicle.config.VehicleConfiguration.VehicleProperty(com.amazon.sampleapp.aace.vehicle.config.VehicleConfiguration.VehiclePropertyType.VERSION, java.lang.String.format(
-                        "Vehicle Software Version 1.0 (Auto SDK Version %s)", this.mEngine.getProperty(com.amazon.sampleapp.aace.core.CoreProperties.VERSION))),
+                    /*new com.amazon.sampleapp.aace.vehicle.config.VehicleConfiguration.VehicleProperty(com.amazon.sampleapp.aace.vehicle.config.VehicleConfiguration.VehiclePropertyType.VERSION, java.lang.String.format(
+                        "Vehicle Software Version 1.0 (Auto SDK Version %s)", this.mEngine.getProperty(com.amazon.sampleapp.aace.core.CoreProperties.VERSION))),*/
                     new com.amazon.sampleapp.aace.vehicle.config.VehicleConfiguration.VehicleProperty(com.amazon.sampleapp.aace.vehicle.config.VehicleConfiguration.VehiclePropertyType.OPERATING_SYSTEM, "Android 8.1 Oreo API Level 26"),
                     new com.amazon.sampleapp.aace.vehicle.config.VehicleConfiguration.VehicleProperty(com.amazon.sampleapp.aace.vehicle.config.VehicleConfiguration.VehiclePropertyType.HARDWARE_ARCH, "Armv8a"),
                     new com.amazon.sampleapp.aace.vehicle.config.VehicleConfiguration.VehicleProperty(com.amazon.sampleapp.aace.vehicle.config.VehicleConfiguration.VehiclePropertyType.LANGUAGE, "en-US"),
