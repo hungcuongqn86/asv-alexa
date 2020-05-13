@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
-import {isAndroid, isIOS, screen, device } from "tns-core-modules/platform";
+import {isAndroid, isIOS, screen, device} from "tns-core-modules/platform";
 import * as utils from "tns-core-modules/utils/utils";
-import { android as applicationModule } from "tns-core-modules/application";
+import {android as applicationModule} from "tns-core-modules/application";
 import * as constant from "../const";
 
 declare var com: any;
@@ -19,9 +19,9 @@ export class HomeComponent implements OnInit, OnDestroy {
     private mEngine: any;
     private mPreferences: any;
 
-    private mAudioCueStartVoice:android.media.MediaPlayer; // Voice-initiated listening audio cue
-    private mAudioCueStartTouch:android.media.MediaPlayer; // Touch-initiated listening audio cue
-    private mAudioCueEnd:android.media.MediaPlayer; // End of listening audio cue
+    private mAudioCueStartVoice: android.media.MediaPlayer; // Voice-initiated listening audio cue
+    private mAudioCueStartTouch: android.media.MediaPlayer; // Touch-initiated listening audio cue
+    private mAudioCueEnd: android.media.MediaPlayer; // End of listening audio cue
     private sRequiredPermissions = [android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.READ_EXTERNAL_STORAGE];
 
     constructor() {
@@ -34,7 +34,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.activity = applicationModule.startActivity;
 
         this.asvAlexa = new com.amazon.sampleapp.AsvAlexaPlugin();
-        if(this.asvAlexa.reqPermission(this.context, this.activity)){
+        if (this.asvAlexa.reqPermission(this.context, this.activity)) {
             this.create();
         }
 
@@ -49,7 +49,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     }
 
-    private create(){
+    private create() {
         if (isAndroid) {
             const wakesoundId = this.context.getResources().getIdentifier("med_ui_wakesound", "raw", this.activity.getPackageName());
             const wakesounTouchId = this.context.getResources().getIdentifier("med_ui_wakesound_touch", "raw", this.activity.getPackageName());
@@ -99,7 +99,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
 
     private updateDevicePreferences(clientId: string, productId, productDsn) {
-        const editor:android.content.SharedPreferences.Editor = this.mPreferences.edit();
+        const editor: android.content.SharedPreferences.Editor = this.mPreferences.edit();
         editor.putString(this.context.getResources().getString(utils.ad.resources.getStringId('preference_client_id')), clientId);
         editor.putString(this.context.getResources().getString(utils.ad.resources.getStringId('preference_product_id')), productId);
         editor.putString(this.context.getResources().getString(utils.ad.resources.getStringId('preference_product_dsn')), productDsn);
@@ -107,7 +107,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         // console.log(123456789, this.context.getResources().getString(utils.ad.resources.getStringId('preference_client_id')));
     }
 
-    private registerBroadCastReceiver(){
+    private registerBroadCastReceiver() {
         var that = this;
 
         let receiverCallback = (androidContext, intent) => {
@@ -156,26 +156,36 @@ export class HomeComponent implements OnInit, OnDestroy {
         // this.mSpeechRecognizer.addObserver(this);
     }
 
-    private startEngine(json: string){
-        const cacheDir:java.io.File = this.activity.getCacheDir();
-        const appDataDir:java.io.File = new java.io.File(cacheDir, "appdata");
+    private startEngine(json: string) {
+        try {
+            const cacheDir: java.io.File = this.activity.getCacheDir();
+            const appDataDir: java.io.File = new java.io.File(cacheDir, "appdata");
 
-        // Copy certs from assets to certs subdirectory of cache directory
-        const certsDir:java.io.File = new java.io.File(appDataDir, "certs");
-        com.amazon.sampleapp.FileUtils.copyAllAssets(this.activity.getAssets(), "certs", certsDir, false);
+            // Copy certs from assets to certs subdirectory of cache directory
+            const certsDir: java.io.File = new java.io.File(appDataDir, "certs");
+            com.amazon.sampleapp.FileUtils.copyAllAssets(this.activity.getAssets(), "certs", certsDir, false);
 
-        // Copy models from assets to certs subdirectory of cache directory.
-        // Force copy the models on every start so that the models on device cache are always the latest
-        // from the APK
-        const modelsDir:java.io.File = new java.io.File(appDataDir, "models");
-        com.amazon.sampleapp.FileUtils.copyAllAssets(this.activity.getAssets(), "models", modelsDir, true);
+            // Copy models from assets to certs subdirectory of cache directory.
+            // Force copy the models on every start so that the models on device cache are always the latest
+            // from the APK
+            const modelsDir: java.io.File = new java.io.File(appDataDir, "models");
+            com.amazon.sampleapp.FileUtils.copyAllAssets(this.activity.getAssets(), "models", modelsDir, true);
 
-        console.log("startEngine-----------------------------------------------------------------------");
+            console.log("startEngine-----------------------------------------------------------------------");
 
-        // Create AAC engine
-        this.mEngine = com.amazon.sampleapp.aace.core.Engine.create(this.context);
-        const configuration = this.getEngineConfigurations(json, appDataDir, certsDir, modelsDir);
-        console.log(1111111111111111111, configuration);
+            // Create AAC engine
+            this.mEngine = com.amazon.aace.core.Engine.create(this.context);
+            const configuration: any[] = this.getEngineConfigurations(json, appDataDir, certsDir, modelsDir);
+            const configureSucceeded = this.mEngine.configure(configuration);
+            if (!configureSucceeded) {
+                console.log("startEngine", "Engine configuration failed");
+                return false;
+            }
+            console.log("configureSucceeded", configureSucceeded);
+        } catch (e) {
+            console.log("Error----------", e);
+            return;
+        }
     }
 
     public tapToTalk() {
@@ -184,10 +194,10 @@ export class HomeComponent implements OnInit, OnDestroy {
         const res = this.asvAlexa.tapToTalk();
         console.log(res);
 		*/
-		// this.startLVCInteractionService();
+        // this.startLVCInteractionService();
     }
 
-    private getEngineConfigurations(json: string, appDataDir:java.io.File, certsDir:java.io.File, modelsDir:java.io.File){
+    private getEngineConfigurations(json: string, appDataDir: java.io.File, certsDir: java.io.File, modelsDir: java.io.File) {
         // Configure the engine
         const productDsn = this.mPreferences.getString(this.context.getResources().getString(utils.ad.resources.getStringId('preference_product_dsn')), "");
         const clientId = this.mPreferences.getString(this.context.getResources().getString(utils.ad.resources.getStringId('preference_client_id')), "");
@@ -197,38 +207,38 @@ export class HomeComponent implements OnInit, OnDestroy {
         // console.log(22222222, this.mEngine.getProperty(com.amazon.sampleapp.aace.core.CoreProperties.VERSION));
 
         const configuration = [
-            com.amazon.sampleapp.aace.alexa.config.AlexaConfiguration.createCurlConfig(certsDir.getPath()),
-            com.amazon.sampleapp.aace.alexa.config.AlexaConfiguration.createDeviceInfoConfig(productDsn, clientId, productId),
-            com.amazon.sampleapp.aace.alexa.config.AlexaConfiguration.createMiscStorageConfig(appDataDir.getPath() + "/miscStorage.sqlite"),
-            com.amazon.sampleapp.aace.alexa.config.AlexaConfiguration.createCertifiedSenderConfig(appDataDir.getPath() + "/certifiedSender.sqlite"),
-            com.amazon.sampleapp.aace.alexa.config.AlexaConfiguration.createAlertsConfig(appDataDir.getPath() + "/alerts.sqlite"),
-            com.amazon.sampleapp.aace.alexa.config.AlexaConfiguration.createSettingsConfig(appDataDir.getPath() + "/settings.sqlite"),
-            com.amazon.sampleapp.aace.alexa.config.AlexaConfiguration.createNotificationsConfig(appDataDir.getPath() + "/notifications.sqlite"),
-            com.amazon.sampleapp.aace.storage.config.StorageConfiguration.createLocalStorageConfig(appDataDir.getPath() + "/localStorage.sqlite"),
+            com.amazon.aace.alexa.config.AlexaConfiguration.createCurlConfig(certsDir.getPath()),
+            com.amazon.aace.alexa.config.AlexaConfiguration.createDeviceInfoConfig(productDsn, clientId, productId),
+            com.amazon.aace.alexa.config.AlexaConfiguration.createMiscStorageConfig(appDataDir.getPath() + "/miscStorage.sqlite"),
+            com.amazon.aace.alexa.config.AlexaConfiguration.createCertifiedSenderConfig(appDataDir.getPath() + "/certifiedSender.sqlite"),
+            com.amazon.aace.alexa.config.AlexaConfiguration.createAlertsConfig(appDataDir.getPath() + "/alerts.sqlite"),
+            com.amazon.aace.alexa.config.AlexaConfiguration.createSettingsConfig(appDataDir.getPath() + "/settings.sqlite"),
+            com.amazon.aace.alexa.config.AlexaConfiguration.createNotificationsConfig(appDataDir.getPath() + "/notifications.sqlite"),
+            com.amazon.aace.storage.config.StorageConfiguration.createLocalStorageConfig(appDataDir.getPath() + "/localStorage.sqlite"),
 
-            com.amazon.sampleapp.aace.vehicle.config.VehicleConfiguration.createVehicleInfoConfig(
+            com.amazon.aace.vehicle.config.VehicleConfiguration.createVehicleInfoConfig(
                 [
-                    new com.amazon.sampleapp.aace.vehicle.config.VehicleConfiguration.VehicleProperty(com.amazon.sampleapp.aace.vehicle.config.VehicleConfiguration.VehiclePropertyType.MAKE, "Amazon"),
-                    new com.amazon.sampleapp.aace.vehicle.config.VehicleConfiguration.VehicleProperty(com.amazon.sampleapp.aace.vehicle.config.VehicleConfiguration.VehiclePropertyType.MODEL, "AmazonCarOne"),
-                    new com.amazon.sampleapp.aace.vehicle.config.VehicleConfiguration.VehicleProperty(com.amazon.sampleapp.aace.vehicle.config.VehicleConfiguration.VehiclePropertyType.TRIM, "Advance"),
-                    new com.amazon.sampleapp.aace.vehicle.config.VehicleConfiguration.VehicleProperty(com.amazon.sampleapp.aace.vehicle.config.VehicleConfiguration.VehiclePropertyType.YEAR, "2025"),
-                    new com.amazon.sampleapp.aace.vehicle.config.VehicleConfiguration.VehicleProperty(com.amazon.sampleapp.aace.vehicle.config.VehicleConfiguration.VehiclePropertyType.GEOGRAPHY, "US"),
+                    new com.amazon.aace.vehicle.config.VehicleConfiguration.VehicleProperty(com.amazon.aace.vehicle.config.VehicleConfiguration.VehiclePropertyType.MAKE, "Amazon"),
+                    new com.amazon.aace.vehicle.config.VehicleConfiguration.VehicleProperty(com.amazon.aace.vehicle.config.VehicleConfiguration.VehiclePropertyType.MODEL, "AmazonCarOne"),
+                    new com.amazon.aace.vehicle.config.VehicleConfiguration.VehicleProperty(com.amazon.aace.vehicle.config.VehicleConfiguration.VehiclePropertyType.TRIM, "Advance"),
+                    new com.amazon.aace.vehicle.config.VehicleConfiguration.VehicleProperty(com.amazon.aace.vehicle.config.VehicleConfiguration.VehiclePropertyType.YEAR, "2025"),
+                    new com.amazon.aace.vehicle.config.VehicleConfiguration.VehicleProperty(com.amazon.aace.vehicle.config.VehicleConfiguration.VehiclePropertyType.GEOGRAPHY, "US"),
                     /*new com.amazon.sampleapp.aace.vehicle.config.VehicleConfiguration.VehicleProperty(com.amazon.sampleapp.aace.vehicle.config.VehicleConfiguration.VehiclePropertyType.VERSION, java.lang.String.format(
                         "Vehicle Software Version 1.0 (Auto SDK Version %s)", this.mEngine.getProperty(com.amazon.sampleapp.aace.core.CoreProperties.VERSION))),*/
-                    new com.amazon.sampleapp.aace.vehicle.config.VehicleConfiguration.VehicleProperty(com.amazon.sampleapp.aace.vehicle.config.VehicleConfiguration.VehiclePropertyType.OPERATING_SYSTEM, "Android 8.1 Oreo API Level 26"),
-                    new com.amazon.sampleapp.aace.vehicle.config.VehicleConfiguration.VehicleProperty(com.amazon.sampleapp.aace.vehicle.config.VehicleConfiguration.VehiclePropertyType.HARDWARE_ARCH, "Armv8a"),
-                    new com.amazon.sampleapp.aace.vehicle.config.VehicleConfiguration.VehicleProperty(com.amazon.sampleapp.aace.vehicle.config.VehicleConfiguration.VehiclePropertyType.LANGUAGE, "en-US"),
-                    new com.amazon.sampleapp.aace.vehicle.config.VehicleConfiguration.VehicleProperty(com.amazon.sampleapp.aace.vehicle.config.VehicleConfiguration.VehiclePropertyType.MICROPHONE, "Single, roof mounted"),
+                    new com.amazon.aace.vehicle.config.VehicleConfiguration.VehicleProperty(com.amazon.aace.vehicle.config.VehicleConfiguration.VehiclePropertyType.OPERATING_SYSTEM, "Android 8.1 Oreo API Level 26"),
+                    new com.amazon.aace.vehicle.config.VehicleConfiguration.VehicleProperty(com.amazon.aace.vehicle.config.VehicleConfiguration.VehiclePropertyType.HARDWARE_ARCH, "Armv8a"),
+                    new com.amazon.aace.vehicle.config.VehicleConfiguration.VehicleProperty(com.amazon.aace.vehicle.config.VehicleConfiguration.VehiclePropertyType.LANGUAGE, "en-US"),
+                    new com.amazon.aace.vehicle.config.VehicleConfiguration.VehicleProperty(com.amazon.aace.vehicle.config.VehicleConfiguration.VehiclePropertyType.MICROPHONE, "Single, roof mounted"),
                     // If this list is left blank, it will be fetched by the engine using amazon default endpoint
-                    new com.amazon.sampleapp.aace.vehicle.config.VehicleConfiguration.VehicleProperty(com.amazon.sampleapp.aace.vehicle.config.VehicleConfiguration.VehiclePropertyType.COUNTRY_LIST, "US,GB,IE,CA,DE,AT,IN,JP,AU,NZ,FR"),
-                    new com.amazon.sampleapp.aace.vehicle.config.VehicleConfiguration.VehicleProperty(com.amazon.sampleapp.aace.vehicle.config.VehicleConfiguration.VehiclePropertyType.VEHICLE_IDENTIFIER, "123456789a")
+                    new com.amazon.aace.vehicle.config.VehicleConfiguration.VehicleProperty(com.amazon.aace.vehicle.config.VehicleConfiguration.VehiclePropertyType.COUNTRY_LIST, "US,GB,IE,CA,DE,AT,IN,JP,AU,NZ,FR"),
+                    new com.amazon.aace.vehicle.config.VehicleConfiguration.VehicleProperty(com.amazon.aace.vehicle.config.VehicleConfiguration.VehiclePropertyType.VEHICLE_IDENTIFIER, "123456789a")
                 ]
             )
         ]
 
         const endpointConfigPath = android.os.Environment.getExternalStorageDirectory().getAbsolutePath() + "/aace.json";
         if (new java.io.File(endpointConfigPath).exists()) {
-            const alexaEndpointsConfig = com.amazon.sampleapp.aace.core.config.ConfigurationFile.create(android.os.Environment.getExternalStorageDirectory().getAbsolutePath() + "/aace.json");
+            const alexaEndpointsConfig = com.amazon.aace.core.config.ConfigurationFile.create(android.os.Environment.getExternalStorageDirectory().getAbsolutePath() + "/aace.json");
             configuration.push(alexaEndpointsConfig);
             console.log("getEngineConfigurations", "Overriding endpoints");
         }
