@@ -23,6 +23,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     private mAudioCueStartTouch: android.media.MediaPlayer; // Touch-initiated listening audio cue
     private mAudioCueEnd: android.media.MediaPlayer; // End of listening audio cue
     private sRequiredPermissions = [android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.READ_EXTERNAL_STORAGE];
+    private mAudioInputProvider: any;
 
     constructor() {
         // Use the component constructor to inject providers.
@@ -181,7 +182,13 @@ export class HomeComponent implements OnInit, OnDestroy {
                 console.log("startEngine", "Engine configuration failed");
                 return false;
             }
-            console.log("configureSucceeded", configureSucceeded);
+
+            // Create the platform implementation handlers and register them with the engine
+
+            // AudioInputProvider
+            this.mAudioInputProvider = new com.amazon.sampleapp.impl.Audio.AudioInputProviderHandler(this.activity)
+
+            console.log("startEngine Succeeded");
         } catch (e) {
             console.log("Error----------", e);
             return;
