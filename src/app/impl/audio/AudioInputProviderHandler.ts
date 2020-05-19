@@ -1,4 +1,5 @@
 import * as application from "tns-core-modules/application";
+import {AudioInputHandler} from './AudioInputHandler';
 
 declare var com: any;
 
@@ -7,7 +8,8 @@ export class AudioInputProviderHandler extends com.amazon.aace.audio.AudioInputP
     private mDefaultAudioInput = null;
     private mActivity: any;
 
-    public AudioInputProviderHandler(activity) {
+    constructor(activity) {
+        super();
         this.mActivity = activity;
     }
 

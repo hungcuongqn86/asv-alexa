@@ -11,9 +11,9 @@ export class AudioInputHandler extends com.amazon.aace.audio.AudioInput {
     private static sAudioFramesInBuffer = 5; // Create large enough buffer for 5 audio frames.
 
     private mActivity: any;
-    private mExecutor = java.util.concurrent.Executors.newFixedThreadPool( 1 );
+    private mExecutor = java.util.concurrent.Executors.newFixedThreadPool(1);
 
-    private mAudioInput: any;
+    public mAudioInput: any;
     private mReaderRunnable: any;
 
     constructor(activity) {
@@ -35,7 +35,8 @@ export class AudioInputHandler extends com.amazon.aace.audio.AudioInput {
                 android.media.MediaRecorder.AudioSource.MIC, this.sSampleRateInHz,
                 android.media.AudioFormat.CHANNEL_IN_MONO, android.media.AudioFormat.ENCODING_PCM_16BIT,
                 bufferSize);
-        } catch (e) {}
+        } catch (e) {
+        }
         return audioRecord;
     }
 
@@ -47,7 +48,7 @@ export class AudioInputHandler extends com.amazon.aace.audio.AudioInput {
         if (this.mAudioInput.getState() != android.media.AudioRecord.STATE_INITIALIZED) {
             // Retry AudioRecord initialization.
             this.mAudioInput = this.createAudioInput();
-            if ( this.mAudioInput.getState() != android.media.AudioRecord.STATE_INITIALIZED ) {
+            if (this.mAudioInput.getState() != android.media.AudioRecord.STATE_INITIALIZED) {
                 return false;
             }
         }
@@ -78,70 +79,88 @@ export class AudioInputHandler extends com.amazon.aace.audio.AudioInput {
             // Start audio recording
             try {
                 this.mAudioInput.startRecording();
-            } catch ( e ) {
+            } catch (e) {
                 return false;
             }
 
             // Read recorded audio samples and pass to engine
             try {
-                this.mExecutor.submit( this.mReaderRunnable = new this.AudioReaderRunnable() ); // Submit the audio reader thread
-            } catch ( e) {
+                this.mExecutor.submit(this.mReaderRunnable = new AudioReaderRunnable(this.sSamplesToCollectInOneCycle, this.sBytesInEachSample, this.mAudioInput)); // Submit the audio reader thread
+            } catch (e) {
                 return false;
             }
             return true;
         }
     }
+}
 
-    //
-    // AudioReader class
-    //
-    private AudioReaderRunnable = class AudioReaderRunnable implements java.lang.Runnable {
-        public wait(): void;
-        public wait(param0: number): void;
-        public wait(param0: number, param1: number): void;
-        public wait(param0?: any, param1?: any) {
-            throw new Error("Method not implemented.");
-        }
-        public equals(param0: any): boolean {
-            throw new Error("Method not implemented.");
-        }
-        public clone() {
-            throw new Error("Method not implemented.");
-        }
-        public toString(): string {
-            throw new Error("Method not implemented.");
-        }
-        public notify(): void {
-            throw new Error("Method not implemented.");
-        }
-        public getClass(): java.lang.Class<any> {
-            throw new Error("Method not implemented.");
-        }
-        public finalize(): void {
-            throw new Error("Method not implemented.");
-        }
-        public hashCode(): number {
-            throw new Error("Method not implemented.");
-        }
-        public notifyAll(): void {
-            throw new Error("Method not implemented.");
-        }
-        private mRunning = true;
-        private mBuffer = new byte[sSamplesToCollectInOneCycle * sBytesInEachSample];
+//
+// AudioReader class
+// implements java.lang.Runnable
+//
 
-        cancel() { this.mRunning = false; }
+export class AudioReaderRunnable implements java.lang.Runnable {
+    public wait(): void;
+    public wait(param0: number): void;
+    public wait(param0: number, param1: number): void;
+    public wait(param0?: any, param1?: any) {
+        throw new Error("Method not implemented.");
+    }
 
-        isRunning() { return this.mRunning; }
+    public equals(param0: any): boolean {
+        throw new Error("Method not implemented.");
+    }
 
-        public run() {
-            let size: number;
+    public clone() {
+        throw new Error("Method not implemented.");
+    }
 
-            while (this.mRunning) {
-                size = this.mAudioInput.read(mBuffer, 0, mBuffer.length);
-                if ( size > 0 && mRunning ) {
-                    write( mBuffer, size );
-                }
+    public toString(): string {
+        throw new Error("Method not implemented.");
+    }
+
+    public notify(): void {
+        throw new Error("Method not implemented.");
+    }
+
+    public getClass(): java.lang.Class<any> {
+        throw new Error("Method not implemented.");
+    }
+
+    public finalize(): void {
+        throw new Error("Method not implemented.");
+    }
+
+    public hashCode(): number {
+        throw new Error("Method not implemented.");
+    }
+
+    public notifyAll(): void {
+        throw new Error("Method not implemented.");
+    }
+
+    run(): void {
+        let size: number;
+        while (this.mRunning) {
+            size = this.mAudioInput.read(this.mBuffer, 0, this.mBuffer.length);
+            if (size > 0 && this.mRunning) {
+                com.amazon.aace.audio.write(this.mBuffer, size);
             }
         }
+    }
+
+    private mRunning = true;
+    private mBuffer = [];
+
+    cancel() {
+        this.mRunning = false;
+    }
+
+    isRunning() {
+        return this.mRunning;
+    }
+
+    constructor(public sSamplesToCollectInOneCycle: number, public sBytesInEachSample: number, public mAudioInput: android.media.AudioRecord) {
+        this.mBuffer = [sSamplesToCollectInOneCycle * sBytesInEachSample]
     }
 }

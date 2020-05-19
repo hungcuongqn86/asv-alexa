@@ -3,6 +3,7 @@ import {isAndroid, isIOS, screen, device} from "tns-core-modules/platform";
 import * as utils from "tns-core-modules/utils/utils";
 import {android as applicationModule} from "tns-core-modules/application";
 import * as constant from "../const";
+import {AudioInputProviderHandler} from "../impl/audio/AudioInputProviderHandler";
 
 declare var com: any;
 
@@ -172,8 +173,6 @@ export class HomeComponent implements OnInit, OnDestroy {
             const modelsDir: java.io.File = new java.io.File(appDataDir, "models");
             com.amazon.sampleapp.FileUtils.copyAllAssets(this.activity.getAssets(), "models", modelsDir, true);
 
-            console.log("startEngine-----------------------------------------------------------------------");
-
             // Create AAC engine
             this.mEngine = com.amazon.aace.core.Engine.create(this.context);
             const configuration: any[] = this.getEngineConfigurations(json, appDataDir, certsDir, modelsDir);
@@ -186,7 +185,10 @@ export class HomeComponent implements OnInit, OnDestroy {
             // Create the platform implementation handlers and register them with the engine
 
             // AudioInputProvider
-            this.mAudioInputProvider = new com.amazon.sampleapp.impl.Audio.AudioInputProviderHandler(this.activity)
+            this.mAudioInputProvider = new AudioInputProviderHandler(this.activity)
+            if (!this.mEngine.registerPlatformInterface(this.mAudioInputProvider)) {
+                console.log("Could not register AudioInputProvider platform interface");
+            }
 
             console.log("startEngine Succeeded");
         } catch (e) {
