@@ -4,6 +4,8 @@ import * as utils from "tns-core-modules/utils/utils";
 import {android as applicationModule} from "tns-core-modules/application";
 import * as constant from "../const";
 import {AudioInputProviderHandler} from "../impl/audio/AudioInputProviderHandler";
+import {AudioOutputProviderHandler} from "../impl/audio/AudioOutputProviderHandler";
+import {AlexaClientHandler} from "../impl/alexaclient/AlexaClientHandler";
 
 declare var com: any;
 
@@ -25,6 +27,8 @@ export class HomeComponent implements OnInit, OnDestroy {
     private mAudioCueEnd: android.media.MediaPlayer; // End of listening audio cue
     private sRequiredPermissions = [android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.READ_EXTERNAL_STORAGE];
     private mAudioInputProvider: any;
+    private mAudioOutputProvider: any;
+    private mAlexaClient: any;
 
     constructor() {
         // Use the component constructor to inject providers.
@@ -189,6 +193,18 @@ export class HomeComponent implements OnInit, OnDestroy {
             if (!this.mEngine.registerPlatformInterface(this.mAudioInputProvider)) {
                 console.log("Could not register AudioInputProvider platform interface");
             }
+
+            this.mAudioOutputProvider = new AudioOutputProviderHandler(this.activity)
+            if (!this.mEngine.registerPlatformInterface(this.mAudioOutputProvider)) {
+                console.log("Could not register AudioOutputProvider platform interface");
+            }
+
+            this.mAlexaClient = new AlexaClientHandler(this.activity)
+            if (!this.mEngine.registerPlatformInterface(this.mAlexaClient)) {
+                console.log("Could not register AlexaClient platform interface");
+            }
+
+
 
             console.log("startEngine Succeeded");
         } catch (e) {
