@@ -6,6 +6,10 @@ import * as constant from "../const";
 import {AudioInputProviderHandler} from "../impl/audio/AudioInputProviderHandler";
 import {AudioOutputProviderHandler} from "../impl/audio/AudioOutputProviderHandler";
 import {AlexaClientHandler} from "../impl/alexaclient/AlexaClientHandler";
+import {PlaybackControllerHandler} from "../impl/playbackcontroller/PlaybackControllerHandler";
+import {SpeechRecognizerHandler} from "../impl/speechrecognizer/SpeechRecognizerHandler";
+import {AudioPlayerHandler} from "../impl/audioplayer/AudioPlayerHandler";
+import {SpeechSynthesizerHandler} from "../impl/speechsynthesizer/SpeechSynthesizerHandler";
 
 declare var com: any;
 
@@ -29,6 +33,9 @@ export class HomeComponent implements OnInit, OnDestroy {
     private mAudioInputProvider: any;
     private mAudioOutputProvider: any;
     private mAlexaClient: any;
+    private mPlaybackController: any;
+    private mAudioPlayer: any;
+    private mSpeechSynthesizer: any;
 
     constructor() {
         // Use the component constructor to inject providers.
@@ -159,7 +166,7 @@ export class HomeComponent implements OnInit, OnDestroy {
             console.log("onLVCConfigReceived", "Could not start engine. Reason: " + e.getMessage());
             return;
         }
-        // this.mSpeechRecognizer.addObserver(this);
+        this.mSpeechRecognizer.addObserver(this);
     }
 
     private startEngine(json: string) {
@@ -202,6 +209,27 @@ export class HomeComponent implements OnInit, OnDestroy {
             this.mAlexaClient = new AlexaClientHandler(this.activity)
             if (!this.mEngine.registerPlatformInterface(this.mAlexaClient)) {
                 console.log("Could not register AlexaClient platform interface");
+            }
+
+            this.mPlaybackController = new PlaybackControllerHandler(this.activity)
+            if (!this.mEngine.registerPlatformInterface(this.mPlaybackController)) {
+                console.log("Could not register PlaybackController platform interface");
+            }
+
+            const wakeWordSupported = false;
+            this.mSpeechRecognizer = new SpeechRecognizerHandler(this.activity, wakeWordSupported, true)
+            if (!this.mEngine.registerPlatformInterface(this.mSpeechRecognizer)) {
+                console.log("Could not register SpeechRecognizer platform interface");
+            }
+
+            this.mAudioPlayer = new AudioPlayerHandler(this.mAudioOutputProvider, this.mPlaybackController)
+            if (!this.mEngine.registerPlatformInterface(this.mAudioPlayer)) {
+                console.log("Could not register AudioPlayer platform interface");
+            }
+
+            this.mSpeechSynthesizer = new SpeechSynthesizerHandler()
+            if (!this.mEngine.registerPlatformInterface(this.mSpeechSynthesizer)) {
+                console.log("Could not register SpeechSynthesizer platform interface");
             }
 
 
