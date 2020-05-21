@@ -1,5 +1,5 @@
 import * as application from "tns-core-modules/application";
-import {AuthStateObserver} from "./AuthStateObserver";
+import {AuthStateObserver} from "../authprovider/AuthStateObserver";
 
 declare var com: any;
 

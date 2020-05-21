@@ -10,6 +10,9 @@ import {PlaybackControllerHandler} from "../impl/playbackcontroller/PlaybackCont
 import {SpeechRecognizerHandler} from "../impl/speechrecognizer/SpeechRecognizerHandler";
 import {AudioPlayerHandler} from "../impl/audioplayer/AudioPlayerHandler";
 import {SpeechSynthesizerHandler} from "../impl/speechsynthesizer/SpeechSynthesizerHandler";
+import {AlexaSpeakerHandler} from "../impl/alexaspeaker/AlexaSpeakerHandler";
+import {AlertsHandler} from "../impl/alerts/AlertsHandler";
+import {NetworkInfoProviderHandler} from "../impl/networkinfoprovider/NetworkInfoProviderHandler";
 
 declare var com: any;
 
@@ -36,6 +39,9 @@ export class HomeComponent implements OnInit, OnDestroy {
     private mPlaybackController: any;
     private mAudioPlayer: any;
     private mSpeechSynthesizer: any;
+    private mAlexaSpeaker: any;
+    private mAlerts: any;
+    private mNetworkInfoProvider: any;
 
     constructor() {
         // Use the component constructor to inject providers.
@@ -232,7 +238,23 @@ export class HomeComponent implements OnInit, OnDestroy {
                 console.log("Could not register SpeechSynthesizer platform interface");
             }
 
+            this.mAlexaSpeaker = new AlexaSpeakerHandler(this.activity)
+            if (!this.mEngine.registerPlatformInterface(this.mAlexaSpeaker)) {
+                console.log("Could not register AlexaSpeaker platform interface");
+            }
 
+            this.mAlerts = new AlertsHandler(this.activity)
+            if (!this.mEngine.registerPlatformInterface(this.mAlerts)) {
+                console.log("Could not register Alerts platform interface");
+            }
+
+            this.mNetworkInfoProvider = new NetworkInfoProviderHandler(this.activity, this.mEngine)
+            if (!this.mEngine.registerPlatformInterface(this.mNetworkInfoProvider)) {
+                console.log("Could not register NetworkInfoProvider platform interface");
+            }
+
+            // CBL Auth Handler
+            const LoginHandler = new LoginWithAmazonCBL(this.activity);
 
             console.log("startEngine Succeeded");
         } catch (e) {
