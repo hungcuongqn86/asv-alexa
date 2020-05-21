@@ -262,9 +262,36 @@ export class LoginWithAmazonCBL implements AuthHandler, NetworkConnectionObserve
     }
 
     authorize() {
+        if ( this.mConnected ) {
+            if ( this.mAuthorizationTimerTask != null ) {
+                this.mAuthorizationTimerTask.cancel();
+            }
+            this.requestDeviceAuthorization();
+        } else {
+            const builder = new android.app.AlertDialog.Builder( this.mActivity ) ;
+            builder.setTitle( "Internet not available" );
+            builder.setIcon( android.R.drawable.ic_dialog_alert );
+            builder.setMessage( "Please verify your network settings." );
+            builder.setCancelable( false );
+            builder.setPositiveButton( "OK", null );
+            const alert = builder.create();
+            alert.show();
+        }
     }
 
-    deauthorize() {
+    public deauthorize() {
+        // stop refresh timer task
+        if ( this.mRefreshTimerTask != null ) this.mRefreshTimerTask.cancel();
+
+        // Clear refresh token in preferences
+        const editor = this.mPreferences.edit();
+        editor.putString( this.context.getResources().getString(utils.ad.resources.getStringId('preference_refresh_token')), "" );
+        editor.apply();
+
+        this.mCurrentAuthState = com.amazon.aace.alexa.AuthProvider.AuthState.UNINITIALIZED;
+        this.mCurrentAuthError = com.amazon.aace.alexa.AuthProvider.AuthError.NO_ERROR;
+        this.mCurrentAuthToken = "";
+        this.notifyAuthObservers();
     }
 
     public onConnectionStatusChanged(status) {
