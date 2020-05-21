@@ -13,6 +13,9 @@ import {SpeechSynthesizerHandler} from "../impl/speechsynthesizer/SpeechSynthesi
 import {AlexaSpeakerHandler} from "../impl/alexaspeaker/AlexaSpeakerHandler";
 import {AlertsHandler} from "../impl/alerts/AlertsHandler";
 import {NetworkInfoProviderHandler} from "../impl/networkinfoprovider/NetworkInfoProviderHandler";
+import {LoginWithAmazonCBL} from "../impl/authprovider/LoginWithAmazonCBL";
+import {AuthProviderHandler} from "../impl/authprovider/AuthProviderHandler";
+import {GlobalPresetHandler} from "../impl/globalpreset/GlobalPresetHandler";
 
 declare var com: any;
 
@@ -42,6 +45,8 @@ export class HomeComponent implements OnInit, OnDestroy {
     private mAlexaSpeaker: any;
     private mAlerts: any;
     private mNetworkInfoProvider: any;
+    private mAuthProvider: any;
+    private mGlobalPresetHandler: any;
 
     constructor() {
         // Use the component constructor to inject providers.
@@ -254,7 +259,28 @@ export class HomeComponent implements OnInit, OnDestroy {
             }
 
             // CBL Auth Handler
-            const LoginHandler = new LoginWithAmazonCBL(this.activity);
+            const LoginHandler = new LoginWithAmazonCBL(this.activity, this.context);
+
+            this.mAuthProvider = new AuthProviderHandler(this.activity, LoginHandler)
+            if (!this.mEngine.registerPlatformInterface(this.mAuthProvider)) {
+                console.log("Could not register AuthProvider platform interface");
+            }
+
+            this.mNetworkInfoProvider.registerNetworkConnectionObserver(LoginHandler);
+
+            this.mGlobalPresetHandler = new GlobalPresetHandler(this.activity)
+            if (!this.mEngine.registerPlatformInterface(this.mGlobalPresetHandler)) {
+                console.log("Could not register Mock Global Preset platform interface");
+            }
+
+            // Start the engine
+            if (!this.mEngine.start()) {
+                console.log("Could not start engine");
+                return ;
+            }
+            this.mEngineStarted = true;
+
+            this.mAuthProvider.onInitialize();
 
             console.log("startEngine Succeeded");
         } catch (e) {
